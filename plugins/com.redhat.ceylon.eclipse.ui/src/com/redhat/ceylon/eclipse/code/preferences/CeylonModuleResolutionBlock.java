@@ -3,9 +3,9 @@ package com.redhat.ceylon.eclipse.code.preferences;
 import static org.eclipse.jface.layout.GridDataFactory.fillDefaults;
 import static org.eclipse.jface.layout.GridDataFactory.swtDefaults;
 
-import java.io.StringReader;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
-import org.apache.commons.io.input.ReaderInputStream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -243,9 +243,13 @@ public class CeylonModuleResolutionBlock {
                         box.open();
                         return;
                     }
-                    overridesResource.create(new ReaderInputStream(new StringReader(
-                            "<overrides xmlns=\"http://www.ceylon-lang.org/xsd/overrides\">\n" + 
-                            "</overrides>")), true, null);
+                    try {
+                        overridesResource.create(new ByteArrayInputStream(
+                                ("<overrides xmlns=\"http://www.ceylon-lang.org/xsd/overrides\">\n" + 
+                                "</overrides>").getBytes("ASCII")), true, null);
+                    } catch (UnsupportedEncodingException e1) {
+                        e1.printStackTrace();
+                    }
                     final IFile fileToOpen = overridesResource;
                     Display.getDefault().asyncExec(new Runnable() {
                         @Override
